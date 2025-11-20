@@ -3,7 +3,19 @@ from urllib.parse import quote_plus
 import os
 
 class MongoQueries:
+    _instance = None
+    _client = None
+    
+    def __new__(cls):
+        if cls._instance is None:
+            cls._instance = super(MongoQueries, cls).__new__(cls)
+            cls._instance._initialized = False
+        return cls._instance
+    
     def __init__(self):
+        if self._initialized:
+            return
+            
         self.host = "localhost"
         self.port = 27017
         self.service_name = 'labdatabase'
@@ -16,25 +28,28 @@ class MongoQueries:
             # Fallback para variáveis de ambiente
             self.user = os.getenv('MONGO_USER', 'labdatabase')
             self.passwd = os.getenv('MONGO_PASS', 'lab@Database2025')
-
-    def __del__(self):
-        if hasattr(self, "mongo_client"):
-            self.close()
+        
+        self._initialized = True
 
     def connect(self):
-        self.mongo_client = pymongo.MongoClient(f"mongodb://{self.user}:{quote_plus(self.passwd)}@{self.host}:{self.port}/")
-        self.db = self.mongo_client[self.service_name]
-        return self.db
+        if MongoQueries._client is None:
+            MongoQueries._client = pymongo.MongoClient(
+                f"mongodb://{self.user}:{quote_plus(self.passwd)}@{self.host}:{self.port}/"
+            )
+        return MongoQueries._client[self.service_name]
 
     def close(self):
-        if hasattr(self, "mongo_client"):
-            self.mongo_client.close()
+        if MongoQueries._client is not None:
+            MongoQueries._client.close()
+            MongoQueries._client = None
 
 def get_connection():
     mongo = MongoQueries()
     return mongo.connect()
 
 def release_connection(conn):
+    # Para MongoDB, não fechamos a conexão a cada chamada
+    # O pool de conexões do pymongo gerencia isso automaticamente
     pass
 
 def connect():
@@ -42,4 +57,5 @@ def connect():
     return mongo.connect()
 
 def close():
-    pass
+    mongo = MongoQueries()
+    mongo.close()
