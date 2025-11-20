@@ -57,5 +57,7 @@ def connect():
     return mongo.connect()
 
 def close():
-    mongo = MongoQueries()
-    mongo.close()
+    # Para MongoDB, NÃO fechamos a conexão após cada requisição
+    # O pool de conexões do pymongo gerencia isso automaticamente
+    # Isso evita fechar a conexão compartilhada entre requisições
+    pass
