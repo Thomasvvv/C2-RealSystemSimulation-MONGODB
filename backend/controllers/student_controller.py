@@ -59,11 +59,28 @@ def create_student():
                 'message': f'Campos obrigatórios ausentes ou vazios: {", ".join(missing_fields)}'
             }), 400
 
+        # Converter IDs para int
+        try:
+            id_curso = int(id_curso)
+        except (ValueError, TypeError):
+            return jsonify({
+                'success': False,
+                'message': 'id_curso deve ser um número válido'
+            }), 400
+
         db = connect()
         data_nasc = data.get("data_nasc")
         telefone = data.get("telefone")
 
         try:
+            # Validar se o curso existe
+            curso_exists = db.cursos.count_documents({"id": id_curso})
+            if curso_exists == 0:
+                return jsonify({
+                    'success': False,
+                    'message': 'Curso não encontrado'
+                }), 404
+            
             ano_atual = datetime.now().year
             curso_formatted = str(id_curso).zfill(2)
             

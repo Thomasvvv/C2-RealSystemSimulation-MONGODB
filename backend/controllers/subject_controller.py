@@ -28,6 +28,15 @@ def create_subject():
             missing_fields.append('nome')
         if carga_horaria is None or carga_horaria == '':
             missing_fields.append('carga_horaria')
+        
+        # Converter IDs para int
+        try:
+            id_curso = int(id_curso)
+        except (ValueError, TypeError):
+            return jsonify({
+                'success': False,
+                'message': 'id_curso deve ser um número válido'
+            }), 400
             
         if missing_fields:
             return jsonify({
@@ -45,6 +54,14 @@ def create_subject():
                 sort=[("id_materia", -1)]
             )
             id_materia = (max_materia['id_materia'] + 1) if max_materia else 1
+        else:
+            try:
+                id_materia = int(id_materia)
+            except (ValueError, TypeError):
+                return jsonify({
+                    'success': False,
+                    'message': 'id_materia deve ser um número válido'
+                }), 400
 
         try:
             curso_exists = db.cursos.count_documents({"id": id_curso})
@@ -57,9 +74,9 @@ def create_subject():
             subject_doc = {
                 "id_materia": id_materia,
                 "id_curso": id_curso,
-                "periodo": periodo,
+                "periodo": int(periodo),
                 "nome": nome,
-                "carga_horaria": carga_horaria
+                "carga_horaria": int(carga_horaria)
             }
             
             db.materias.insert_one(subject_doc)
