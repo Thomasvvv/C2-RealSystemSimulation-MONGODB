@@ -1,4 +1,4 @@
-from db_conn import connect, close
+from db.db_conn import connect, close
 from datetime import datetime
 
 def seed_database():
