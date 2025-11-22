@@ -16,9 +16,6 @@ def dashboard_summary():
         print("🔄 [DASHBOARD] Iniciando geração de relatório do dashboard...")
         
         db = connect()
-        if not db:
-            raise Exception("Falha ao estabelecer conexão com o banco de dados")
-        
         print("✅ [DASHBOARD] Conexão com banco estabelecida com sucesso")
         
     except Exception as e:
@@ -158,9 +155,6 @@ def course_statistics():
         print("🔄 [COURSE_STATS] Iniciando geração de estatísticas por curso...")
         
         db = connect()
-        if not db:
-            raise Exception("Falha ao estabelecer conexão com o banco de dados")
-        
         print("✅ [COURSE_STATS] Conexão com banco estabelecida com sucesso")
         
     except Exception as e:
@@ -340,9 +334,6 @@ def offers_complete_report():
         print("🔄 [OFFERS_REPORT] Iniciando geração de relatório de ofertas...")
         
         db = connect()
-        if not db:
-            raise Exception("Falha ao estabelecer conexão com o banco de dados")
-        
         print("✅ [OFFERS_REPORT] Conexão com banco estabelecida com sucesso")
         
         print("📊 [OFFERS_REPORT] Executando aggregation pipeline...")
