@@ -2,15 +2,13 @@
 
 Sistema de gerenciamento acadêmico desenvolvido para fins educacionais na disciplina de Banco de Dados (Prof. Howard).
 
-O sistema permite realizar operações CRUD completas para alunos, cursos, professores, matérias, ofertas e matrículas, além de gerar relatórios dinâmicos e dashboards de desempenho.
-
 ---
 
 ## 🧭 Visão Geral
 
 O projeto é dividido em duas camadas principais:
 
-- **Backend:** Desenvolvido em Python (Flask) com **MongoDB**
+- **Backend:** Desenvolvido em Python (Flask) com banco NoSQL MongoDB  
 - **Frontend:** Desenvolvido em HTML, CSS e JavaScript, com painéis dinâmicos e modais interativos
 
 ---
@@ -18,10 +16,10 @@ O projeto é dividido em duas camadas principais:
 ## 📁 Estrutura do Projeto
 
 ```
-C2-RealSystemSimulation-OracleDataBase/
+C2-RealSystemSimulation-MongoDB/
 ├── backend/
 │   ├── controllers/          # Controladores para cada entidade
-│   ├── db/                   # Configuração e conexão com MongoDB
+│   ├── db/                   # Conexão e configuração MongoDB
 │   ├── app.py                # Aplicação Flask principal
 │   ├── requirements.txt      # Dependências Python
 │   └── .env.example          # Exemplo de configuração
@@ -29,8 +27,6 @@ C2-RealSystemSimulation-OracleDataBase/
 │   ├── index.html            # Interface principal
 │   ├── scripts/              # JavaScript (API, CRUD, relatórios)
 │   └── styles/               # CSS global
-├── DataBase/
-│   └── Create_Collections.js # Script de criação das coleções
 └── README.md
 ```
 
@@ -41,12 +37,14 @@ C2-RealSystemSimulation-OracleDataBase/
 ### 1. 🧩 Requisitos
 
 - **Python 3.x**
-- **MongoDB Community Server**
+- **MongoDB**
 - **pip**
 
 ---
 
 ### 2. 📦 Instalar Dependências
+
+No diretório `backend/`, execute:
 
 ```bash
 cd backend
@@ -57,206 +55,95 @@ pip install -r requirements.txt
 
 ### 3. 🔐 Configurar Variáveis de Ambiente
 
-Crie o arquivo `.env` baseado em `.env.example`:
+Crie o arquivo `.env` baseado no `.env.example`:
 
 ```ini
-MONGO_URI=mongodb://localhost:27017/
-MONGO_DB=student_system
+MONGO_URI=mongodb://localhost:27017
+MONGO_DB_NAME=sge_database
 ```
-
 ---
 
-### 4. 🗃️ Criar o Banco de Dados (MongoDB)
-
-Crie as coleções executando o arquivo de inicialização:
+## 🔗 Exemplos de Endpoints
 
 ```
-DataBase/Create_Collections.js
+GET  /api/students
+POST /api/students
+GET  /api/reports/course-statistics
+GET  /api/reports/offers-complete
 ```
-
-Exemplo de criação das coleções:
-
-```javascript
-db.createCollection("students")
-db.createCollection("courses")
-db.createCollection("teachers")
-db.createCollection("subjects")
-db.createCollection("offers")
-db.createCollection("enrollments")
-```
-
----
-
-## 5. 🚀 Executar o Backend
-
-```bash
-cd backend
-python app.py
-```
-
-A aplicação iniciará em:
-
-```
-http://localhost:5000
-```
-
-### Exemplos de endpoints:
-
-```bash
-GET http://localhost:5000/api/students
-POST http://localhost:5000/api/students
-GET http://localhost:5000/api/reports/course-statistics
-```
-
----
-
-## 6. 🌐 Acessar o Frontend
-
-Abra:
-
-```
-frontend/index.html
-```
-
-**Funcionalidades disponíveis:**
-
-- 📋 CRUD completo  
-- 🔄 Edição inline  
-- 📊 Relatórios dinâmicos  
-- 🎯 Dashboard em tempo real  
-
 ---
 
 ## 🧱 Funcionalidades Principais
 
 ### 🧍‍♂️ Alunos
-- CRUD completo
-- Validação de dados
-- Suporte a múltiplos formatos de data
+- CRUD completo  
+- Validação  
+- Datas em múltiplos formatos  
 
 ### 🎓 Cursos
-- Cadastro e manutenção de cursos
-- Associação com matérias e alunos
-- Controle de carga horária
+- Associação com matérias e alunos  
+- Controle de carga horária  
 
 ### 👩‍🏫 Professores
-- Registro e gerenciamento
-- Consultas por oferta
-- Status ativo/inativo
+- Cadastro e consultas  
+- Status ativo/inativo  
 
 ### 📚 Matérias e Ofertas
-- Associação de matérias a cursos
-- Professores responsáveis
-- Controle de períodos letivos
+- Uso de `$lookup` para relacionamentos  
+- Controle de semestre e professor  
 
 ### 📝 Matrículas
-- Status do aluno
-- Integração com ofertas
-- Validações de integridade
+- Controle via coleção `enrollments`  
+- Status de cursando, aprovado, reprovado  
 
----
-
-# 📊 Relatórios (MongoDB)
-
-### ▶️ Estatísticas por Curso
-
-```javascript
-db.students.aggregate([
-  { 
-    $group: { 
-      _id: "$course_id", 
-      total: { $sum: 1 } 
-    } 
-  }
-])
-```
-
-### ▶️ Ofertas Completas
-
-```javascript
-db.offers.aggregate([
-  {
-    $lookup: {
-      from: "subjects",
-      localField: "subject_id",
-      foreignField: "_id",
-      as: "subject"
-    }
-  },
-  {
-    $lookup: {
-      from: "teachers",
-      localField: "teacher_id",
-      foreignField: "_id",
-      as: "teacher"
-    }
-  }
-])
-```
-
-### ▶️ Dashboard Geral
-
-```javascript
-db.students.countDocuments()
-db.courses.countDocuments()
-db.offers.countDocuments()
-```
+### 📊 Relatórios
+- Estatísticas por curso  
+- Lista completa de ofertas  
+- Dashboard geral  
 
 ---
 
 ## 🧰 Tecnologias Utilizadas
 
-### Backend
-- Python 3.x
-- Flask 2.3.2
-- PyMongo 4.6.1
-- Flask-CORS 4.0.0
-- python-dotenv 1.0.0
+**Backend**
+- Python 3.x  
+- Flask 2.3.2  
+- PyMongo 4.6.1  
+- Flask-CORS 4.0.0  
+- python-dotenv 1.0.0  
 
-### Frontend
-- HTML5
-- CSS3
-- JavaScript Vanilla
-- Fetch API
+**Frontend**
+- HTML5  
+- CSS3  
+- JavaScript Vanilla  
+- Fetch API  
 
-### Banco de Dados
-- MongoDB Community Server
-- Coleções relacionais via Modelagem NoSQL
-- Agregações (aggregate pipeline)
-
----
-
-## 🧩 Características Técnicas
-
-- Arquitetura modularizada
-- Endpoints RESTful
-- Validação de dados
-- Conexão via PyMongo
-- Agregações avançadas
-- Logs e tratamento de erros
-- Dashboard em tempo real
+**Banco de Dados**
+- MongoDB  
 
 ---
 
 ## 🔧 Troubleshooting
 
-### ❌ Erro: MongoDB não encontrado
-- Verifique se o serviço está rodando:
-```bash
-sudo systemctl start mongod
-```
-ou
+### Erro: "MongoDB connection refused"
+Execute:
+
 ```bash
 mongod
 ```
 
-### ❌ Erro de conexão no backend
-- Verifique o arquivo `.env`
-- Confirme a porta `27017`
+### Frontend não conecta ao backend
+- Verifique se a API está em `http://localhost:5000`
+- Limpe o cache do navegador: Ctrl+Shift+R
+- Verifique o console (F12)
 
-### ❌ Frontend não conecta
-- Verifique se o backend está rodando
-- Limpe cache do navegador (Ctrl+Shift+R)
+---
+
+## ⚠️ Observações Importantes
+
+1. **Segurança:** O sistema é apenas educacional.  
+2. **Propósito:** Demonstra CRUD, agregações MongoDB e arquitetura REST.  
+3. **Banco:** Consultas com `$lookup`, `$group`, `$match`, `$project`.  
 
 ---
 
@@ -273,11 +160,5 @@ mongod
 
 ## 📘 Licença
 
-Este projeto está sob a licença MIT.
-
----
-
-© 2025 — Sistema de Gestão de Estudantes.
-
-
+Projeto sob licença MIT — uso educacional.
 
